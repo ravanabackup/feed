@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6699.pdf</title>
+    <!-- Link to favicon -->
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ravana69/radio/main/favicon.ico">
+    <style>
+        /* Material Design Dark Mode Styles */
+        body {
+            font-family: Roboto, Arial, sans-serif;
+            background-color: #121212;
+            color: #E0E0E0;
+            margin: 20px;
+        }
+        h1 {
+            color: #BB86FC;
+        }
+        form {
+            background-color: #1E1E1E;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        label {
+            color: #E0E0E0;
+        }
+        input[type="url"], input[type="number"], input[type="text"] {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            background-color: #424242;
+            color: #E0E0E0;
+        }
+        input[type="url"], input[type="text"] {
+            width: calc(100% - 210px);
+        }
+        input[type="number"] {
+            width: 50px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #6200EE;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #3700B3;
+        }
+        #song-feed-button {
+            background-color: #BB86FC;
+        }
+        #song-feed-button:hover {
+            background-color: #3700B3;
+        }
+        #toggle-thumbnail, #toggle-ytm {
+            accent-color: #BB86FC;
+        }
+        #feed {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #1E1E1E;
+        }
+        #feed th, #feed td {
+            border: 1px solid #333;
+            padding: 10px;
+        }
+        #feed th {
+            background-color: #333;
+            color: #BB86FC;
+        }
+        .item-image {
+            max-width: 100px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .item-image iframe {
+            width: 100px;
+            height: 75px;
+            border-radius: 4px;
+        }
+        .hide-thumbnail .item-image {
+            display: none;
+        }
+        .hide-thumbnail th:nth-child(2),
+        .hide-thumbnail td:nth-child(2) {
+            display: none;
+        }
+        .item-title {
+            color: #FFFFFF;
+        }
+        .item-title:hover {
+            text-decoration: underline;
+        }
+        .ytm-link {
+            color: #BB86FC;
+        }
+        .ytm-link:hover {
+            text-decoration: underline;
+        }
+        #countdown {
+            margin-top: 10px;
+            color: #03DAC6;
+        }
+        #last-updated {
+            margin-top: 10px;
+            color: #03DAC6;
+        }
+        .turn-off-video {
+            display: none;
+            color: #FF0000;
+            cursor: pointer;
+        }
+        /* Preloader Styles */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        #loader {
+            display: block;
+            position: relative;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #9370DB;
+            animation: spin 2s linear infinite;
+        }
+        #loader:before {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #BA55D3;
+            animation: spin 3s linear infinite;
+        }
+        #loader:after {
+            content: "";
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #FF00FF;
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #search-form {
+            display: none;
+            margin-top: 20px;
+            background-color: #1E1E1E;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        #search-count {
+            color: #BB86FC;
+        }
+    </style>
+</head>
+<body>
+    <h1></h1>
+
+    <center>
+        <button type="button" id="show-search-form-button">Search Titles</button>
+        <!-- Global Search Form -->
+        <form id="search-form" style="display: none;">
+            <label for="search-query">Search Titles:</label>
+            <input type="text" id="search-query">
+            <span id="search-count">0</span>
+        </form>
+
+        <form id="rss-form">
+            <label for="days">Days:</label>
+            <input type="number" id="days" value="1" min="1">
+            <button type="button" id="song-feed-button">Go</button>
+        </form>
+        <label>
+            <input type="checkbox" id="toggle-thumbnail"> Show Thumbnail
+        </label>
+        <label>
+            <input type="checkbox" id="toggle-ytm"> Show YTMusic Link
+        </label>
+        <div id="countdown"></div>
+        <div id="last-updated"></div>
+        <table id="feed" class="hide-thumbnail">
+            <thead>
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Thumbnail</th>
+                    <th id="ytm-title">Title</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <!-- Preloader HTML -->
+        <div id="preloader">
+            <div id="loader"></div>
+        </div>
+    </center>
+
+    <script src="https://unpkg.com/rss-parser/dist/rss-parser.min.js"></script>
+    <script>
+        let feedUrl = '';
+
+        document.getElementById('rss-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            feedUrl = document.getElementById('rss-url').value;
+            const days = parseInt(document.getElementById('days').value, 10);
+            fetchFeed(feedUrl, days);
+        });
+
+        document.getElementById('song-feed-button').addEventListener('click', function() {
+            feedUrl = 'https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom';
+            const days = parseInt(document.getElementById('days').value, 10);
+            fetchFeed(feedUrl, days);
+        });
+
+        document.getElementById('toggle-thumbnail').addEventListener('change', function() {
+            document.getElementById('feed').classList.toggle('hide-thumbnail');
+        });
+
+        document.getElementById('toggle-ytm').addEventListener('change', function() {
+            updateLinks();
+            updateTableHeader();
+        });
+
+        document.getElementById('show-search-form-button').addEventListener('click', function() {
+            const searchForm = document.getElementById('search-form');
+            if (searchForm.style.display === 'none') {
+                searchForm.style.display = 'flex';
+            } else {
+                searchForm.style.display = 'none';
+            }
+        });
+
+        document.getElementById('search-query').addEventListener('input', function() {
+            const query = document.getElementById('search-query').value.toLowerCase();
+            searchTitles(query);
+        });
+
+        function searchTitles(query) {
+            const rows = document.querySelectorAll('#feed tbody tr');
+            query = query.toLowerCase();
+
+            let count = 0;
+
+            rows.forEach(row => {
+                const titleCell = row.querySelector('td:nth-child(3) a');
+                const titleText = titleCell.textContent.toLowerCase();
+                const linkText = titleCell.href.toLowerCase();
+
+                if (titleText.includes(query) || linkText.includes(query)) {
+                    row.style.display = '';
+                    count++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('search-count').textContent = `${count} result(s)`;
+        }
+
+        async function fetchFeed(url, days) {
+            document.getElementById('preloader').style.display = 'flex';
+
+            const parser = new RSSParser();
+            try {
+                const feed = await parser.parseURL(url);
+                const recentItems = filterRecentItems(feed.items, days);
+                displayFeed(recentItems);
+
+                fetchLastUpdatedTime();
+
+                if (window.feedInterval) {
+                    clearInterval(window.feedInterval);
+                }
+
+                window.feedInterval = setInterval(async () => {
+                    try {
+                        const newFeed = await parser.parseURL(url);
+                        const newRecentItems = filterRecentItems(newFeed.items, days);
+                        displayFeed(newRecentItems);
+                        fetchLastUpdatedTime();
+                    } catch (err) {
+                        console.error('Error fetching the feed:', err);
+                    }
+                }, 300000);
+
+            } catch (err) {
+                console.error('Error fetching the feed:', err);
+                document.querySelector('#feed tbody').innerHTML = '<tr><td colspan="4">Error fetching the feed. Please check the URL and try again.</td></tr>';
+            } finally {
+                document.getElementById('preloader').style.display = 'none';
+            }
+        }
+
+        function filterRecentItems(items, days) {
+            const now = new Date();
+            const pastDate = new Date(now.setDate(now.getDate() - days));
+            return items.filter(item => new Date(item.pubDate) >= pastDate);
+        }
+
+        function getYoutubeThumbnail(url) {
+            const videoId = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            return videoId ? `https://img.youtube.com/vi/${videoId[1]}/hqdefault.jpg` : null;
+        }
+
+        function getYoutubeEmbedUrl(url) {
+            const videoId = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            return videoId ? `https://www.youtube.com/embed/${videoId[1]}?autoplay=1` : null;
+        }
+
+        function displayFeed(items) {
+            const feedContainer = document.querySelector('#feed tbody');
+            feedContainer.innerHTML = '';
+
+            if (items.length === 0) {
+                feedContainer.innerHTML = '<tr><td colspan="4">No recent items found in the feed.</td></tr>';
+                return;
+            }
+
+            items.forEach((item, index) => {
+                const title = item.title || 'No title';
+                const link = item.link || '#';
+                const pubDate = new Date(item.pubDate).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+                const imageUrl = getYoutubeThumbnail(link) || (item.enclosure && item.enclosure.url) || 'placeholder.jpg';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>
+                        <img class="item-image" src="${imageUrl}" alt="Thumbnail" data-link="${link}">
+                        <iframe class="item-video" src="" frameborder="0" allowfullscreen style="display: none;"></iframe>
+                        <span class="turn-off-video">❌</span>
+                    </td>
+                    <td><a class="item-title" href="${link}" target="_blank">${title}</a></td>
+                    <td>${pubDate}</td>
+                `;
+
+                feedContainer.appendChild(row);
+            });
+
+            updateLinks();
+        }
+
+        function updateLinks() {
+            const rows = document.querySelectorAll('#feed tbody tr');
+            rows.forEach(row => {
+                const linkCell = row.querySelector('td:nth-child(3) a');
+                let link = linkCell.href;
+                if (document.getElementById('toggle-ytm').checked) {
+                    link = link.replace('youtube.com', 'music.youtube.com').replace('www.', '');
+                    linkCell.href = link;
+                    linkCell.textContent = linkCell.textContent;
+                } else {
+                    link = link.replace('music.youtube.com', 'youtube.com').replace('www.', '');
+                    linkCell.href = link;
+                }
+            });
+        }
+
+        function updateTableHeader() {
+            const ytmTitle = document.getElementById('toggle-ytm').checked ? 'Title: 🔊' : 'Title: 🖥️';
+            document.getElementById('ytm-title').textContent = ytmTitle;
+        }
+
+        updateTableHeader();
+
+        document.querySelector('#feed').addEventListener('click', function(event) {
+            if (event.target.classList.contains('item-image')) {
+                const link = event.target.getAttribute('data-link');
+                const iframe = event.target.nextElementSibling;
+                const turnOffVideo = iframe.nextElementSibling;
+
+                iframe.src = getYoutubeEmbedUrl(link);
+                if (iframe.src) {
+                    iframe.style.display = "block";
+                    event.target.style.display = "none";
+                    turnOffVideo.style.display = "inline";
+                }
+            } else if (event.target.classList.contains('turn-off-video')) {
+                const iframe = event.target.previousElementSibling;
+                const thumbnail = iframe.previousElementSibling;
+
+                iframe.src = "";
+                iframe.style.display = "none";
+                thumbnail.style.display = "inline";
+                event.target.style.display = "none";
+            }
+        });
+
+        updateTableHeader();
+
+        async function fetchLastUpdatedTime() {
+            try {
+                const response = await fetch('https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+                const updatedElement = xmlDoc.querySelector("updated");
+                if (updatedElement) {
+                    const lastUpdated = new Date(updatedElement.textContent);
+                    const options = { 
+                        timeZone: 'Asia/Kolkata',
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                    };
+                    const formattedDate = lastUpdated.toLocaleString('en-IN', options).replace(/,/g, '');
+                    document.getElementById('last-updated').textContent = `Last Updated: ${formattedDate}`;
+                }
+            } catch (error) {
+                console.error('Error fetching last updated time:', error);
+            }
+        }
+
+        // Initial call to fetch the feed when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const days = parseInt(document.getElementById('days').value, 10);
+            fetchFeed('https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom', days);
+        });
+    </script>
+</body>
+</html>
