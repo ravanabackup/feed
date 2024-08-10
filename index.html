@@ -7,18 +7,13 @@
     <!-- Link to favicon -->
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ravana69/radio/main/favicon.ico">
     <style>
-        /* Material Design Dark Mode Styles */
+        /* Base styles */
         body {
             font-family: Roboto, Arial, sans-serif;
-            background-color: #121212;
-            color: #E0E0E0;
             margin: 20px;
-        }
-        h1 {
-            color: #BB86FC;
+            transition: background-color 0.3s, color 0.3s;
         }
         form {
-            background-color: #1E1E1E;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -26,15 +21,9 @@
             gap: 10px;
             align-items: center;
         }
-        label {
-            color: #E0E0E0;
-        }
         input[type="url"], input[type="number"], input[type="text"] {
             padding: 10px;
             border-radius: 4px;
-            border: 1px solid #333;
-            background-color: #424242;
-            color: #E0E0E0;
         }
         input[type="url"], input[type="text"] {
             width: calc(100% - 210px);
@@ -44,38 +33,18 @@
         }
         button {
             padding: 10px 15px;
-            background-color: #6200EE;
-            color: #FFFFFF;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
         }
-        button:hover {
-            background-color: #3700B3;
-        }
-        #song-feed-button {
-            background-color: #BB86FC;
-        }
-        #song-feed-button:hover {
-            background-color: #3700B3;
-        }
-        #toggle-thumbnail, #toggle-ytm {
-            accent-color: #BB86FC;
-        }
         #feed {
             margin-top: 20px;
             width: 100%;
             border-collapse: collapse;
-            background-color: #1E1E1E;
         }
         #feed th, #feed td {
-            border: 1px solid #333;
             padding: 10px;
-        }
-        #feed th {
-            background-color: #333;
-            color: #BB86FC;
         }
         .item-image {
             max-width: 100px;
@@ -94,29 +63,14 @@
         .hide-thumbnail td:nth-child(2) {
             display: none;
         }
-        .item-title {
-            color: #FFFFFF;
-        }
-        .item-title:hover {
+        .item-title:hover, .ytm-link:hover {
             text-decoration: underline;
         }
-        .ytm-link {
-            color: #BB86FC;
-        }
-        .ytm-link:hover {
-            text-decoration: underline;
-        }
-        #countdown {
+        #countdown, #last-updated {
             margin-top: 10px;
-            color: #03DAC6;
-        }
-        #last-updated {
-            margin-top: 10px;
-            color: #03DAC6;
         }
         .turn-off-video {
             display: none;
-            color: #FF0000;
             cursor: pointer;
         }
         /* Preloader Styles */
@@ -126,7 +80,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -140,31 +93,26 @@
             height: 150px;
             border-radius: 50%;
             border: 3px solid transparent;
-            border-top-color: #9370DB;
             animation: spin 2s linear infinite;
         }
-        #loader:before {
+        #loader:before, #loader:after {
             content: "";
             position: absolute;
+            border-radius: 50%;
+            border: 3px solid transparent;
+        }
+        #loader:before {
             top: 5px;
             left: 5px;
             right: 5px;
             bottom: 5px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: #BA55D3;
             animation: spin 3s linear infinite;
         }
         #loader:after {
-            content: "";
-            position: absolute;
             top: 15px;
             left: 15px;
             right: 15px;
             bottom: 15px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: #FF00FF;
             animation: spin 1.5s linear infinite;
         }
         @keyframes spin {
@@ -174,7 +122,6 @@
         #search-form {
             display: none;
             margin-top: 20px;
-            background-color: #1E1E1E;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -182,15 +129,147 @@
             gap: 10px;
             align-items: center;
         }
-        #search-count {
+
+        /* Light mode styles */
+/* Light mode styles with black/gray shades */
+body.light-mode {
+    background-color: #FFFFFF;
+    color: #333333;
+}
+.light-mode h1 { color: #333333; } /* Dark charcoal gray */
+.light-mode form { background-color: #F5F5F5; }
+.light-mode input[type="url"], .light-mode input[type="number"], .light-mode input[type="text"] {
+    border: 1px solid #A6A6A6;
+    background-color: #FFFFFF;
+    color: #333333;
+}
+.light-mode button {
+    background-color: #333333; /* Dark charcoal gray */
+    color: #FFFFFF;
+}
+.light-mode button:hover { background-color: #1A1A1A; } /* Very dark gray */
+.light-mode #song-feed-button { background-color: #4D4D4D; } /* Medium dark gray */
+.light-mode #song-feed-button:hover { background-color: #333333; }
+.light-mode #toggle-thumbnail, .light-mode #toggle-ytm { accent-color: #4D4D4D; }
+.light-mode #feed th, .light-mode #feed td { border: 1px solid #E0E0E0; }
+.light-mode #feed th {
+    background-color: #E0E0E0; /* Very light gray */
+    color: #333333;
+}
+.light-mode .item-title { color: #333333; }
+.light-mode .ytm-link { color: #4D4D4D; }
+.light-mode #countdown, .light-mode #last-updated { color: #333333; }
+.light-mode .turn-off-video { color: #FF0000; } /* Keeping red for clarity */
+.light-mode #preloader { background-color: rgba(255, 255, 255, 0.8); }
+.light-mode #loader { border-top-color: #4D4D4D; }
+.light-mode #loader:before { border-top-color: #333333; }
+.light-mode #loader:after { border-top-color: #000000; }
+.light-mode #search-form { background-color: #F5F5F5; }
+.light-mode #search-count { color: #333333; }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: #E0E0E0;
+        }
+        .dark-mode h1 { color: #BB86FC; }
+        .dark-mode form { background-color: #1E1E1E; }
+        .dark-mode input[type="url"], .dark-mode input[type="number"], .dark-mode input[type="text"] {
+            border: 1px solid #333;
+            background-color: #424242;
+            color: #E0E0E0;
+        }
+        .dark-mode button {
+            background-color: #6200EE;
+            color: #FFFFFF;
+        }
+        .dark-mode button:hover { background-color: #3700B3; }
+        .dark-mode #song-feed-button { background-color: #BB86FC; }
+        .dark-mode #song-feed-button:hover { background-color: #3700B3; }
+        .dark-mode #toggle-thumbnail, .dark-mode #toggle-ytm { accent-color: #BB86FC; }
+        .dark-mode #feed th, .dark-mode #feed td { border: 1px solid #333; }
+        .dark-mode #feed th {
+            background-color: #333;
             color: #BB86FC;
+        }
+        .dark-mode .item-title { color: #FFFFFF; }
+        .dark-mode .ytm-link { color: #BB86FC; }
+        .dark-mode #countdown, .dark-mode #last-updated { color: #03DAC6; }
+        .dark-mode .turn-off-video { color: #FF0000; }
+        .dark-mode #preloader { background-color: rgba(0, 0, 0, 0.5); }
+        .dark-mode #loader { border-top-color: #9370DB; }
+        .dark-mode #loader:before { border-top-color: #BA55D3; }
+        .dark-mode #loader:after { border-top-color: #FF00FF; }
+        .dark-mode #search-form { background-color: #1E1E1E; }
+        .dark-mode #search-count { color: #BB86FC; }
+
+
+		/* Update the theme toggle switch color */
+		input:checked + .slider {
+    	background-color: #4D4D4D;
+		}
+        /* Theme toggle switch styles */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+        .theme-switch input {
+            display: none;
+        }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+        }
+        .slider:before {
+            background-color: #fff;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .slider.round {
+            border-radius: 34px;
+        }
+        .slider.round:before {
+            border-radius: 50%;
         }
     </style>
 </head>
-<body>
+<body class="light-mode">
     <h1></h1>
 
     <center>
+        <!-- Theme toggle switch -->
+        <div class="theme-switch-wrapper">
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div class="slider round"></div>
+            </label>
+            <em>DM</em>
+        </div>
+
         <button type="button" id="show-search-form-button">Search Titles</button>
         <!-- Global Search Form -->
         <form id="search-form" style="display: none;">
@@ -232,7 +311,7 @@
 
     <script src="https://unpkg.com/rss-parser/dist/rss-parser.min.js"></script>
     <script>
-        let feedUrl = '';
+let feedUrl = '';
 
         document.getElementById('rss-form').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -294,6 +373,18 @@
 
         async function fetchFeed(url, days) {
             document.getElementById('preloader').style.display = 'flex';
+        // Add theme toggle functionality
+        const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+            }    
+        }
+        toggleSwitch.addEventListener('change', switchTheme, false);
 
             const parser = new RSSParser();
             try {
@@ -455,6 +546,6 @@
             const days = parseInt(document.getElementById('days').value, 10);
             fetchFeed('https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom', days);
         });
-    </script>
+   </script>
 </body>
 </html>
