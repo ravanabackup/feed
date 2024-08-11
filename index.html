@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>6699.pdf</title>
+    <title id="dynamic-title">Loading...</title>
     <!-- Link to favicon -->
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ravana69/radio/main/favicon.ico">
     <style>
@@ -402,7 +402,7 @@
     </style>
 </head>
 <body class="light-mode">
-    <h1></h1>
+    <h1 id="page-title"></h1>
 
     <center>
         <!-- Theme toggle switches -->
@@ -650,7 +650,7 @@
             }
         });
 
-        async function fetchLastUpdatedTime() {
+         async function fetchLastUpdatedTime() {
             try {
                 const response = await fetch('https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom');
                 const text = await response.text();
@@ -671,12 +671,15 @@
                     };
                     const formattedDate = lastUpdated.toLocaleString('en-IN', options).replace(/,/g, '');
                     document.getElementById('last-updated').textContent = `Last Updated: ${formattedDate}`;
+                    
+                    // Update only the title tag with the date and time, without "Last Updated:"
+                    document.title = formattedDate;
+                    document.getElementById('dynamic-title').textContent = formattedDate;
                 }
             } catch (error) {
                 console.error('Error fetching last updated time:', error);
             }
         }
-
         // Updated Theme toggle functionality
         const darkModeToggle = document.querySelector('#dark-mode-checkbox');
         const colorfulModeToggle = document.querySelector('#colorful-mode-checkbox');
