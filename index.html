@@ -228,61 +228,129 @@
         }
         .dark-mode #search-count { color: #888888; }
 
- /* Updated Colorful mode styles */
-        body.colorful-mode {
-            background-color: #1a0033;
-            color: #fff;
+        /* Updated Colorful mode styles for light theme */
+        body.light-mode.colorful-mode {
+            background-color: #f0f8ff;
+            color: #333333;
         }
-        .colorful-mode h1 { color: #ff00ff; }
-        .colorful-mode form { 
-            background-color: #4b0082;
+        .light-mode.colorful-mode h1 { color: #ff6347; }
+        .light-mode.colorful-mode form { 
+            background-color: #e6e6fa;
+            border: 2px solid #4b0082;
+        }
+        .light-mode.colorful-mode input[type="url"], 
+        .light-mode.colorful-mode input[type="number"], 
+        .light-mode.colorful-mode input[type="text"] {
+            border: 1px solid #4169e1;
+            background-color: #f0ffff;
+            color: #191970;
+        }
+        .light-mode.colorful-mode button {
+            background-color: #32cd32;
+            color: #ffffff;
+            border: none;
+        }
+        .light-mode.colorful-mode button:hover { background-color: #228b22; }
+        .light-mode.colorful-mode #song-feed-button { 
+            background-color: #ff69b4;
+            border: none;
+        }
+        .light-mode.colorful-mode #song-feed-button:hover { background-color: #ff1493; }
+        .light-mode.colorful-mode #toggle-thumbnail, 
+        .light-mode.colorful-mode #toggle-ytm { accent-color: #ff4500; }
+        .light-mode.colorful-mode #feed th {
+            background-color: #00ced1;
+            color: #ffffff;
+        }
+        .light-mode.colorful-mode #feed td {
+            border: 1px solid #4682b4;
+            background-color: #f0fff0;
+        }
+        .light-mode.colorful-mode #feed tbody tr:nth-child(even) td {
+            background-color: #e0ffff;
+        }
+        .light-mode.colorful-mode #feed tbody tr:hover td {
+            background-color: #fffacd;
+        }
+        .light-mode.colorful-mode .item-title { color: #8a2be2; }
+        .light-mode.colorful-mode .ytm-link { color: #ff4500; }
+        .light-mode.colorful-mode #countdown, 
+        .light-mode.colorful-mode #last-updated { color: #2e8b57; }
+        .light-mode.colorful-mode .turn-off-video { color: #dc143c; }
+        .light-mode.colorful-mode #preloader { background-color: rgba(255, 182, 193, 0.5); }
+        .light-mode.colorful-mode #loader { border-top-color: #ff69b4; }
+        .light-mode.colorful-mode #loader:before { border-top-color: #ff1493; }
+        .light-mode.colorful-mode #loader:after { border-top-color: #ff4500; }
+        .light-mode.colorful-mode #search-form { 
+            background-color: #e6e6fa;
+            border: 2px solid #4b0082;
+        }
+        .light-mode.colorful-mode #search-count { color: #8b008b; }
+        
+        /* New style to ensure images are in color for light colorful mode */
+        .light-mode.colorful-mode img {
+            filter: none;
+        }
+
+        /* Updated Colorful mode styles for dark theme */
+        body.dark-mode.colorful-mode {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        .dark-mode.colorful-mode h1 { color: #ff00ff; }
+        .dark-mode.colorful-mode form { 
+            background-color: #1a0033;
             border: 2px solid #00ffff;
         }
-        .colorful-mode input[type="url"], .colorful-mode input[type="number"], .colorful-mode input[type="text"] {
+        .dark-mode.colorful-mode input[type="url"], 
+        .dark-mode.colorful-mode input[type="number"], 
+        .dark-mode.colorful-mode input[type="text"] {
             border: 1px solid #00ff00;
             background-color: #000033;
             color: #ffff00;
         }
-        .colorful-mode button {
+        .dark-mode.colorful-mode button {
             background-color: #ff1493;
             color: #ffffff;
             border: none;
         }
-        .colorful-mode button:hover { background-color: #ff69b4; }
-        .colorful-mode #song-feed-button { 
+        .dark-mode.colorful-mode button:hover { background-color: #ff69b4; }
+        .dark-mode.colorful-mode #song-feed-button { 
             background-color: #00ffff;
             color: #000000;
             border: none;
         }
-        .colorful-mode #song-feed-button:hover { background-color: #00cccc; }
-        .colorful-mode #toggle-thumbnail, .colorful-mode #toggle-ytm { accent-color: #ff4500; }
-        .colorful-mode #feed th {
+        .dark-mode.colorful-mode #song-feed-button:hover { background-color: #00cccc; }
+        .dark-mode.colorful-mode #toggle-thumbnail, 
+        .dark-mode.colorful-mode #toggle-ytm { accent-color: #ff4500; }
+        .dark-mode.colorful-mode #feed th {
             background-color: #8a2be2;
             color: #ffffff;
         }
-        .colorful-mode #feed td {
+        .dark-mode.colorful-mode #feed td {
             border: 1px solid #00ff00;
             background-color: #000066;
         }
-        .colorful-mode #feed tbody tr:nth-child(even) td {
+        .dark-mode.colorful-mode #feed tbody tr:nth-child(even) td {
             background-color: #000099;
         }
-        .colorful-mode #feed tbody tr:hover td {
+        .dark-mode.colorful-mode #feed tbody tr:hover td {
             background-color: #4b0082;
         }
-        .colorful-mode .item-title { color: #00ffff; }
-        .colorful-mode .ytm-link { color: #ff4500; }
-        .colorful-mode #countdown, .colorful-mode #last-updated { color: #00ff00; }
-        .colorful-mode .turn-off-video { color: #ff0000; }
-        .colorful-mode #preloader { background-color: rgba(75, 0, 130, 0.5); }
-        .colorful-mode #loader { border-top-color: #ff00ff; }
-        .colorful-mode #loader:before { border-top-color: #00ffff; }
-        .colorful-mode #loader:after { border-top-color: #ff4500; }
-        .colorful-mode #search-form { 
-            background-color: #4b0082;
+        .dark-mode.colorful-mode .item-title { color: #00ffff; }
+        .dark-mode.colorful-mode .ytm-link { color: #ff4500; }
+        .dark-mode.colorful-mode #countdown, 
+        .dark-mode.colorful-mode #last-updated { color: #00ff00; }
+        .dark-mode.colorful-mode .turn-off-video { color: #ff0000; }
+        .dark-mode.colorful-mode #preloader { background-color: rgba(75, 0, 130, 0.5); }
+        .dark-mode.colorful-mode #loader { border-top-color: #ff00ff; }
+        .dark-mode.colorful-mode #loader:before { border-top-color: #00ffff; }
+        .dark-mode.colorful-mode #loader:after { border-top-color: #ff4500; }
+        .dark-mode.colorful-mode #search-form { 
+            background-color: #1a0033;
             border: 2px solid #00ffff;
         }
-        .colorful-mode #search-count { color: #00ff00; }
+        .dark-mode.colorful-mode #search-count { color: #00ff00; }
 
         /* Theme toggle switch styles */
         .theme-switch-wrapper {
@@ -609,39 +677,25 @@
             }
         }
 
-// Updated Theme toggle functionality
+        // Updated Theme toggle functionality
         const darkModeToggle = document.querySelector('#dark-mode-checkbox');
         const colorfulModeToggle = document.querySelector('#colorful-mode-checkbox');
 
         function switchTheme(e) {
-            if (e.target.id === 'dark-mode-checkbox') {
-                if (e.target.checked) {
-                    document.body.classList.remove('light-mode');
-                    document.body.classList.add('dark-mode');
-                    // Allow colorful mode to be active with dark mode
-                    if (colorfulModeToggle.checked) {
-                        document.body.classList.add('colorful-mode');
-                    }
-                } else {
-                    document.body.classList.remove('dark-mode');
-                    if (!colorfulModeToggle.checked) {
-                        document.body.classList.add('light-mode');
-                    }
-                }
-            } else if (e.target.id === 'colorful-mode-checkbox') {
-                if (e.target.checked) {
-                    document.body.classList.remove('light-mode');
-                    document.body.classList.add('colorful-mode');
-                    // Keep dark mode if it's active
-                    if (!darkModeToggle.checked) {
-                        document.body.classList.remove('dark-mode');
-                    }
-                } else {
-                    document.body.classList.remove('colorful-mode');
-                    if (!darkModeToggle.checked) {
-                        document.body.classList.add('light-mode');
-                    }
-                }
+            const body = document.body;
+            const isDarkMode = darkModeToggle.checked;
+            const isColorfulMode = colorfulModeToggle.checked;
+
+            body.classList.remove('light-mode', 'dark-mode', 'colorful-mode');
+
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.add('light-mode');
+            }
+
+            if (isColorfulMode) {
+                body.classList.add('colorful-mode');
             }
         }
 
