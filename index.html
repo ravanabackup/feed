@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -680,6 +681,49 @@
                 console.error('Error fetching last updated time:', error);
             }
         }
+       // Add this new function to handle keyboard shortcuts
+        function handleKeyPress(event) {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                return; // Don't trigger shortcuts when typing in input fields
+            }
+
+            switch (event.key) {
+                case ',':
+                    darkModeToggle.checked = false;
+                    switchTheme();
+                    break;
+                case '.':
+                    darkModeToggle.checked = true;
+                    switchTheme();
+                    break;
+                case '/':
+                    colorfulModeToggle.checked = !colorfulModeToggle.checked;
+                    switchTheme();
+                    break;
+            }
+        }
+
+        // Update the switchTheme function to handle combined modes
+        function switchTheme() {
+            const body = document.body;
+            const isDarkMode = darkModeToggle.checked;
+            const isColorfulMode = colorfulModeToggle.checked;
+
+            body.classList.remove('light-mode', 'dark-mode', 'colorful-mode');
+
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.add('light-mode');
+            }
+
+            if (isColorfulMode) {
+                body.classList.add('colorful-mode');
+            }
+        }
+
+        // Add event listener for keypress
+        document.addEventListener('keypress', handleKeyPress);
         // Updated Theme toggle functionality
         const darkModeToggle = document.querySelector('#dark-mode-checkbox');
         const colorfulModeToggle = document.querySelector('#colorful-mode-checkbox');
