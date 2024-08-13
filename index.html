@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -463,296 +462,303 @@
 
     <script src="https://unpkg.com/rss-parser/dist/rss-parser.min.js"></script>
     <script>
-        let feedUrl = '';
+let feedUrl = '';
 
-        document.getElementById('rss-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            feedUrl = document.getElementById('rss-url').value;
-            const days = parseInt(document.getElementById('days').value, 10);
-            fetchFeed(feedUrl, days);
-        });
+document.getElementById('rss-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    feedUrl = document.getElementById('rss-url').value;
+    const days = parseInt(document.getElementById('days').value, 10);
+    fetchFeed(feedUrl, days);
+});
 
-        document.getElementById('song-feed-button').addEventListener('click', function() {
-            feedUrl = 'https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom';
-            const days = parseInt(document.getElementById('days').value, 10);
-            fetchFeed(feedUrl, days);
-        });
+document.getElementById('song-feed-button').addEventListener('click', function() {
+    feedUrl = 'https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom';
+    const days = parseInt(document.getElementById('days').value, 10);
+    fetchFeed(feedUrl, days);
+});
 
-        document.getElementById('toggle-thumbnail').addEventListener('change', function() {
-            document.getElementById('feed').classList.toggle('hide-thumbnail');
-        });
+document.getElementById('toggle-thumbnail').addEventListener('change', function() {
+    document.getElementById('feed').classList.toggle('hide-thumbnail');
+});
 
-        document.getElementById('toggle-ytm').addEventListener('change', function() {
-            updateLinks();
-            updateTableHeader();
-        });
+document.getElementById('toggle-ytm').addEventListener('change', function() {
+    updateLinks();
+    updateTableHeader();
+});
 
-        document.getElementById('show-search-form-button').addEventListener('click', function() {
-            const searchForm = document.getElementById('search-form');
-            if (searchForm.style.display === 'none') {
-                searchForm.style.display = 'flex';
-            } else {
-                searchForm.style.display = 'none';
-            }
-        });
+document.getElementById('show-search-form-button').addEventListener('click', function() {
+    const searchForm = document.getElementById('search-form');
+    if (searchForm.style.display === 'none') {
+        searchForm.style.display = 'flex';
+    } else {
+        searchForm.style.display = 'none';
+    }
+});
 
-        document.getElementById('search-query').addEventListener('input', function() {
-            const query = document.getElementById('search-query').value.toLowerCase();
-            searchTitles(query);
-        });
+document.getElementById('search-query').addEventListener('input', function() {
+    const query = document.getElementById('search-query').value.toLowerCase();
+    searchTitles(query);
+});
 
-        function searchTitles(query) {
-            const rows = document.querySelectorAll('#feed tbody tr');
-            query = query.toLowerCase();
+function searchTitles(query) {
+    const rows = document.querySelectorAll('#feed tbody tr');
+    query = query.toLowerCase();
 
-            let count = 0;
+    let count = 0;
 
-            rows.forEach(row => {
-                const titleCell = row.querySelector('td:nth-child(3) a');
-                const titleText = titleCell.textContent.toLowerCase();
-                const linkText = titleCell.href.toLowerCase();
+    rows.forEach(row => {
+        const titleCell = row.querySelector('td:nth-child(3) a');
+        const titleText = titleCell.textContent.toLowerCase();
+        const linkText = titleCell.href.toLowerCase();
 
-                if (titleText.includes(query) || linkText.includes(query)) {
-                    row.style.display = '';
-                    count++;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+        if (titleText.includes(query) || linkText.includes(query)) {
+            row.style.display = '';
+            count++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
 
-            document.getElementById('search-count').textContent = `${count} result(s)`;
+    document.getElementById('search-count').textContent = `${count} result(s)`;
+}
+
+async function fetchFeed(url, days) {
+    document.getElementById('preloader').style.display = 'flex';
+    const parser = new RSSParser();
+    try {
+        const feed = await parser.parseURL(url);
+        const recentItems = filterRecentItems(feed.items, days);
+        displayFeed(recentItems);
+
+        fetchLastUpdatedTime();
+
+        if (window.feedInterval) {
+            clearInterval(window.feedInterval);
         }
 
-        async function fetchFeed(url, days) {
-            document.getElementById('preloader').style.display = 'flex';
-            const parser = new RSSParser();
+        window.feedInterval = setInterval(async () => {
             try {
-                const feed = await parser.parseURL(url);
-                const recentItems = filterRecentItems(feed.items, days);
-                displayFeed(recentItems);
-
+                const newFeed = await parser.parseURL(url);
+                const newRecentItems = filterRecentItems(newFeed.items, days);
+                displayFeed(newRecentItems);
                 fetchLastUpdatedTime();
-
-                if (window.feedInterval) {
-                    clearInterval(window.feedInterval);
-                }
-
-                window.feedInterval = setInterval(async () => {
-                    try {
-                        const newFeed = await parser.parseURL(url);
-                        const newRecentItems = filterRecentItems(newFeed.items, days);
-                        displayFeed(newRecentItems);
-                        fetchLastUpdatedTime();
-                    } catch (err) {
-                        console.error('Error fetching the feed:', err);
-                    }
-                }, 300000);
-
             } catch (err) {
                 console.error('Error fetching the feed:', err);
-                document.querySelector('#feed tbody').innerHTML = '<tr><td colspan="4">Error fetching the feed. Please check the URL and try again.</td></tr>';
-            } finally {
-                document.getElementById('preloader').style.display = 'none';
             }
+        }, 300000);
+
+    } catch (err) {
+        console.error('Error fetching the feed:', err);
+        document.querySelector('#feed tbody').innerHTML = '<tr><td colspan="4">Error fetching the feed. Please check the URL and try again.</td></tr>';
+    } finally {
+        document.getElementById('preloader').style.display = 'none';
+    }
+}
+
+function filterRecentItems(items, days) {
+    const now = new Date();
+    const pastDate = new Date(now.setDate(now.getDate() - days));
+    return items.filter(item => new Date(item.pubDate) >= pastDate);
+}
+
+function getYoutubeThumbnail(url) {
+    const videoId = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return videoId ? `https://img.youtube.com/vi/${videoId[1]}/hqdefault.jpg` : null;
+}
+
+function getYoutubeEmbedUrl(url) {
+    const videoId = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return videoId ? `https://www.youtube.com/embed/${videoId[1]}?autoplay=1` : null;
+}
+
+function displayFeed(items) {
+    const feedContainer = document.querySelector('#feed tbody');
+    feedContainer.innerHTML = '';
+
+    if (items.length === 0) {
+        feedContainer.innerHTML = '<tr><td colspan="4">No recent items found in the feed.</td></tr>';
+        return;
+    }
+
+    items.forEach((item, index) => {
+        const title = item.title || 'No title';
+        const link = item.link || '#';
+        const pubDate = new Date(item.pubDate).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+        const imageUrl = getYoutubeThumbnail(link) || (item.enclosure && item.enclosure.url) || 'placeholder.jpg';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>
+                <img class="item-image" src="${imageUrl}" alt="Thumbnail" data-link="${link}">
+                <iframe class="item-video" src="" frameborder="0" allowfullscreen style="display: none;"></iframe>
+                <span class="turn-off-video">❌</span>
+            </td>
+            <td><a class="item-title" href="${link}" target="_blank">${title}</a></td>
+            <td>${pubDate}</td>
+        `;
+
+        feedContainer.appendChild(row);
+    });
+
+    updateLinks();
+}
+
+function updateLinks() {
+    const rows = document.querySelectorAll('#feed tbody tr');
+    rows.forEach(row => {
+        const linkCell = row.querySelector('td:nth-child(3) a');
+        let link = linkCell.href;
+        if (document.getElementById('toggle-ytm').checked) {
+            link = link.replace('youtube.com', 'music.youtube.com').replace('www.', '');
+            linkCell.href = link;
+            linkCell.textContent = linkCell.textContent;
+        } else {
+            link = link.replace('music.youtube.com', 'youtube.com').replace('www.', '');
+            linkCell.href = link;
         }
+    });
+}
 
-        function filterRecentItems(items, days) {
-            const now = new Date();
-            const pastDate = new Date(now.setDate(now.getDate() - days));
-            return items.filter(item => new Date(item.pubDate) >= pastDate);
+function updateTableHeader() {
+    const ytmTitle = document.getElementById('toggle-ytm').checked ? 'Title: 🔊' : 'Title: 🖥️';
+    document.getElementById('ytm-title').textContent = ytmTitle;
+}
+
+updateTableHeader();
+
+document.querySelector('#feed').addEventListener('click', function(event) {
+    if (event.target.classList.contains('item-image')) {
+        const link = event.target.getAttribute('data-link');
+        const iframe = event.target.nextElementSibling;
+        const turnOffVideo = iframe.nextElementSibling;
+
+        iframe.src = getYoutubeEmbedUrl(link);
+        if (iframe.src) {
+            iframe.style.display = "block";
+            event.target.style.display = "none";
+            turnOffVideo.style.display = "inline";
         }
+    } else if (event.target.classList.contains('turn-off-video')) {
+        const iframe = event.target.previousElementSibling;
+        const thumbnail = iframe.previousElementSibling;
 
-        function getYoutubeThumbnail(url) {
-            const videoId = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-            return videoId ? `https://img.youtube.com/vi/${videoId[1]}/hqdefault.jpg` : null;
+        iframe.src = "";
+        iframe.style.display = "none";
+        thumbnail.style.display = "inline";
+        event.target.style.display = "none";
+    }
+});
+
+function timeSince(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    let interval = seconds / 31536000;
+
+    if (interval > 1) {
+        return Math.floor(interval) + " years ago";
+    }
+    interval = seconds / 2592000;
+    if (interval > 1) {
+        return Math.floor(interval) + " months ago";
+    }
+    interval = seconds / 86400;
+    if (interval > 1) {
+        return Math.floor(interval) + " days ago";
+    }
+    interval = seconds / 3600;
+    if (interval > 1) {
+        return Math.floor(interval) + " hours ago";
+    }
+    interval = seconds / 60;
+    if (interval > 1) {
+        return Math.floor(interval) + " minutes ago";
+    }
+    return Math.floor(seconds) + " seconds ago";
+}
+
+async function fetchLastUpdatedTime() {
+    try {
+        const response = await fetch('https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom');
+        const text = await response.text();
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(text, "text/xml");
+        const updatedElement = xmlDoc.querySelector("updated");
+        if (updatedElement) {
+            const lastUpdated = new Date(updatedElement.textContent);
+            const options = { 
+                timeZone: 'Asia/Kolkata',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+            const formattedDate = lastUpdated.toLocaleString('en-IN', options).replace(/,/g, '');
+            const timePassed = timeSince(lastUpdated);
+            document.getElementById('last-updated').textContent = `Last Updated: ${formattedDate} (${timePassed})`;
+            
+            // Update only the title tag with the date and time, without "Last Updated:"
+            document.title = formattedDate;
+            document.getElementById('dynamic-title').textContent = formattedDate;
         }
+    } catch (error) {
+        console.error('Error fetching last updated time:', error);
+    }
+}
 
-        function getYoutubeEmbedUrl(url) {
-            const videoId = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-            return videoId ? `https://www.youtube.com/embed/${videoId[1]}?autoplay=1` : null;
-        }
+function handleKeyPress(event) {
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+        return; // Don't trigger shortcuts when typing in input fields
+    }
 
-        function displayFeed(items) {
-            const feedContainer = document.querySelector('#feed tbody');
-            feedContainer.innerHTML = '';
+    switch (event.key) {
+        case ',':
+            darkModeToggle.checked = false;
+            switchTheme();
+            break;
+        case '.':
+            darkModeToggle.checked = true;
+            switchTheme();
+            break;
+        case '/':
+            colorfulModeToggle.checked = !colorfulModeToggle.checked;
+            switchTheme();
+            break;
+    }
+}
 
-            if (items.length === 0) {
-                feedContainer.innerHTML = '<tr><td colspan="4">No recent items found in the feed.</td></tr>';
-                return;
-            }
+function switchTheme() {
+    const body = document.body;
+    const isDarkMode = darkModeToggle.checked;
+    const isColorfulMode = colorfulModeToggle.checked;
 
-            items.forEach((item, index) => {
-                const title = item.title || 'No title';
-                const link = item.link || '#';
-                const pubDate = new Date(item.pubDate).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
-                const imageUrl = getYoutubeThumbnail(link) || (item.enclosure && item.enclosure.url) || 'placeholder.jpg';
+    body.classList.remove('light-mode', 'dark-mode', 'colorful-mode');
 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>
-                        <img class="item-image" src="${imageUrl}" alt="Thumbnail" data-link="${link}">
-                        <iframe class="item-video" src="" frameborder="0" allowfullscreen style="display: none;"></iframe>
-                        <span class="turn-off-video">❌</span>
-                    </td>
-                    <td><a class="item-title" href="${link}" target="_blank">${title}</a></td>
-                    <td>${pubDate}</td>
-                `;
+    if (isDarkMode) {
+        body.classList.add('dark-mode');
+    } else {
+        body.classList.add('light-mode');
+    }
 
-                feedContainer.appendChild(row);
-            });
+    if (isColorfulMode) {
+        body.classList.add('colorful-mode');
+    }
+}
 
-            updateLinks();
-        }
+document.addEventListener('keypress', handleKeyPress);
 
-        function updateLinks() {
-            const rows = document.querySelectorAll('#feed tbody tr');
-            rows.forEach(row => {
-                const linkCell = row.querySelector('td:nth-child(3) a');
-                let link = linkCell.href;
-                if (document.getElementById('toggle-ytm').checked) {
-                    link = link.replace('youtube.com', 'music.youtube.com').replace('www.', '');
-                    linkCell.href = link;
-                    linkCell.textContent = linkCell.textContent;
-                } else {
-                    link = link.replace('music.youtube.com', 'youtube.com').replace('www.', '');
-                    linkCell.href = link;
-                }
-            });
-        }
+const darkModeToggle = document.querySelector('#dark-mode-checkbox');
+const colorfulModeToggle = document.querySelector('#colorful-mode-checkbox');
 
-        function updateTableHeader() {
-            const ytmTitle = document.getElementById('toggle-ytm').checked ? 'Title: 🔊' : 'Title: 🖥️';
-            document.getElementById('ytm-title').textContent = ytmTitle;
-        }
+darkModeToggle.addEventListener('change', switchTheme, false);
+colorfulModeToggle.addEventListener('change', switchTheme, false);
 
-        updateTableHeader();
-
-        document.querySelector('#feed').addEventListener('click', function(event) {
-            if (event.target.classList.contains('item-image')) {
-                const link = event.target.getAttribute('data-link');
-                const iframe = event.target.nextElementSibling;
-                const turnOffVideo = iframe.nextElementSibling;
-
-                iframe.src = getYoutubeEmbedUrl(link);
-                if (iframe.src) {
-                    iframe.style.display = "block";
-                    event.target.style.display = "none";
-                    turnOffVideo.style.display = "inline";
-                }
-            } else if (event.target.classList.contains('turn-off-video')) {
-                const iframe = event.target.previousElementSibling;
-                const thumbnail = iframe.previousElementSibling;
-
-                iframe.src = "";
-                iframe.style.display = "none";
-                thumbnail.style.display = "inline";
-                event.target.style.display = "none";
-            }
-        });
-
-         async function fetchLastUpdatedTime() {
-            try {
-                const response = await fetch('https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom');
-                const text = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(text, "text/xml");
-                const updatedElement = xmlDoc.querySelector("updated");
-                if (updatedElement) {
-                    const lastUpdated = new Date(updatedElement.textContent);
-                    const options = { 
-                        timeZone: 'Asia/Kolkata',
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: true
-                    };
-                    const formattedDate = lastUpdated.toLocaleString('en-IN', options).replace(/,/g, '');
-                    document.getElementById('last-updated').textContent = `Last Updated: ${formattedDate}`;
-                    
-                    // Update only the title tag with the date and time, without "Last Updated:"
-                    document.title = formattedDate;
-                    document.getElementById('dynamic-title').textContent = formattedDate;
-                }
-            } catch (error) {
-                console.error('Error fetching last updated time:', error);
-            }
-        }
-       // Add this new function to handle keyboard shortcuts
-        function handleKeyPress(event) {
-            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-                return; // Don't trigger shortcuts when typing in input fields
-            }
-
-            switch (event.key) {
-                case ',':
-                    darkModeToggle.checked = false;
-                    switchTheme();
-                    break;
-                case '.':
-                    darkModeToggle.checked = true;
-                    switchTheme();
-                    break;
-                case '/':
-                    colorfulModeToggle.checked = !colorfulModeToggle.checked;
-                    switchTheme();
-                    break;
-            }
-        }
-
-        // Update the switchTheme function to handle combined modes
-        function switchTheme() {
-            const body = document.body;
-            const isDarkMode = darkModeToggle.checked;
-            const isColorfulMode = colorfulModeToggle.checked;
-
-            body.classList.remove('light-mode', 'dark-mode', 'colorful-mode');
-
-            if (isDarkMode) {
-                body.classList.add('dark-mode');
-            } else {
-                body.classList.add('light-mode');
-            }
-
-            if (isColorfulMode) {
-                body.classList.add('colorful-mode');
-            }
-        }
-
-        // Add event listener for keypress
-        document.addEventListener('keypress', handleKeyPress);
-        // Updated Theme toggle functionality
-        const darkModeToggle = document.querySelector('#dark-mode-checkbox');
-        const colorfulModeToggle = document.querySelector('#colorful-mode-checkbox');
-
-        function switchTheme(e) {
-            const body = document.body;
-            const isDarkMode = darkModeToggle.checked;
-            const isColorfulMode = colorfulModeToggle.checked;
-
-            body.classList.remove('light-mode', 'dark-mode', 'colorful-mode');
-
-            if (isDarkMode) {
-                body.classList.add('dark-mode');
-            } else {
-                body.classList.add('light-mode');
-            }
-
-            if (isColorfulMode) {
-                body.classList.add('colorful-mode');
-            }
-        }
-
-        darkModeToggle.addEventListener('change', switchTheme, false);
-        colorfulModeToggle.addEventListener('change', switchTheme, false);
-        // Initial call to fetch the feed when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            const days = parseInt(document.getElementById('days').value, 10);
-            fetchFeed('https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom', days);
-        });
+document.addEventListener('DOMContentLoaded', function() {
+    const days = parseInt(document.getElementById('days').value, 10);
+    fetchFeed('https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom', days);
+});
     </script>
 </body>
 </html>
