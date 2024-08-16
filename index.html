@@ -846,6 +846,14 @@ const colorfulModeToggle = document.querySelector('#colorful-mode-checkbox');
 darkModeToggle.addEventListener('change', switchTheme, false);
 colorfulModeToggle.addEventListener('change', switchTheme, false);
 
+document.addEventListener('keydown', function(event) {
+    // Check if backtick (`) key is pressed
+    if (event.keyCode === 192) {
+        // Open GitHub feed link in a new tab
+        window.open('https://github.com/ravanabackup/feed', '_blank');
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     const days = parseInt(document.getElementById('days').value, 10);
     fetchFeed('https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom', days);
