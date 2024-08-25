@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            max-width: 120px;
+            max-height: 90px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Debug Page</h1>
+    <button id="debugButton">Show Potential Private Links</button>
+    <table id="debugTable" style="display: none;">
+        <thead>
+            <tr>
+                <th>Sr. No.</th>
+                <th>Thumbnail</th>
+                <th>Title</th>
+                <th>URL</th>
+                <th>Publish Date</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="https://unpkg.com/rss-parser/dist/rss-parser.min.js"></script>
+    <script>
+        const feedUrl = 'https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom';
+        const parser = new RSSParser();
+        let allItems = [];
+
+        async function fetchFeed() {
+            try {
+                const feed = await parser.parseURL(feedUrl);
+                allItems = feed.items;
+                console.log('Feed fetched successfully');
+            } catch (err) {
+                console.error('Error fetching the feed:', err);
+            }
+        }
+
+        function getYoutubeThumbnail(url) {
+            const videoId = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+            return videoId ? `https://img.youtube.com/vi/${videoId[1]}/hqdefault.jpg` : null;
+        }
+
+        function displayDebugInfo() {
+            const debugTable = document.getElementById('debugTable');
+            const tableBody = debugTable.querySelector('tbody');
+            tableBody.innerHTML = '';
+
+            allItems.forEach((item, index) => {
+                const thumbnail = new Image();
+                thumbnail.src = getYoutubeThumbnail(item.link);
+                thumbnail.onload = function() {
+                    if (this.naturalWidth === 120 && this.naturalHeight === 90) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td><img src="${this.src}" alt="Thumbnail"></td>
+                            <td>${item.title}</td>
+                            <td><a href="${item.link}" target="_blank">${item.link}</a></td>
+                            <td>${new Date(item.pubDate).toLocaleString()}</td>
+                        `;
+                        tableBody.appendChild(row);
+                        debugTable.style.display = 'table';
+                    }
+                };
+            });
+        }
+
+        document.getElementById('debugButton').addEventListener('click', displayDebugInfo);
+
+        // Fetch the feed when the page loads
+        fetchFeed();
+//
+        // Add event listener for the '/' key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === '/') {
+                displayDebugInfo();
+            }
+        });
+    </script>
+</body>
+</html>
