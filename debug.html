@@ -69,6 +69,9 @@
             const tableBody = debugTable.querySelector('tbody');
             tableBody.innerHTML = '';
 
+            // Sort allItems by Sr. No. (index)
+            allItems.sort((a, b) => (a.index < b.index ? -1 : 1));
+
             allItems.forEach((item, index) => {
                 const thumbnail = new Image();
                 thumbnail.src = getYoutubeThumbnail(item.link);
@@ -93,10 +96,10 @@
 
         // Fetch the feed when the page loads
         fetchFeed();
-//
-        // Add event listener for the '/' key
+
+        // Add event listener for the '-' key
         document.addEventListener('keydown', function(event) {
-            if (event.key === '/') {
+            if (event.key === '-') {
                 displayDebugInfo();
             }
         });
