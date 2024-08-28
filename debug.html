@@ -28,7 +28,7 @@
     </style>
 </head>
 <body>
-    <h1>Debug Page</h1>
+    <h1>Debug Page (<span id="debugCount">0</span>)</h1>
     <button id="debugButton">Show Potential Private Links</button>
     <table id="debugTable" style="display: none;">
         <thead>
@@ -48,6 +48,7 @@
         const feedUrl = 'https://rawgithubusercontent.deno.dev/ravanabackup/songrss/gh-pages/feed.atom';
         const parser = new RSSParser();
         let allItems = [];
+        let validLinksCount = 0;
 
         async function fetchFeed() {
             try {
@@ -67,7 +68,9 @@
         function displayDebugInfo() {
             const debugTable = document.getElementById('debugTable');
             const tableBody = debugTable.querySelector('tbody');
+            const debugCount = document.getElementById('debugCount');
             tableBody.innerHTML = '';
+            validLinksCount = 0;
 
             // Sort allItems by Sr. No. (index)
             allItems.sort((a, b) => (a.index < b.index ? -1 : 1));
@@ -77,6 +80,7 @@
                 thumbnail.src = getYoutubeThumbnail(item.link);
                 thumbnail.onload = function() {
                     if (this.naturalWidth === 120 && this.naturalHeight === 90) {
+                        validLinksCount++;
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${index + 1}</td>
@@ -87,6 +91,7 @@
                         `;
                         tableBody.appendChild(row);
                         debugTable.style.display = 'table';
+                        debugCount.textContent = validLinksCount; // Update the count
                     }
                 };
             });
